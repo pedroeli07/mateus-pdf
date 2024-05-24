@@ -19,7 +19,7 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 
 ## **Estrutura de Diretórios**
 
-```plaintext
+
 /mateus-pdf/
 │
 ├── main.py                 # Arquivo principal do Streamlit
@@ -29,7 +29,7 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 ├── create_pdf.py           # Geração de PDF
 ├── load_data.py            # Carregamento de dados
 └── image.py                # Geração de imagens
-'''
+
 ## **Instalação e Execução**
 Para instalar e executar o projeto:
 1. **Clone o Repositório:**
