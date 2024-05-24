@@ -19,32 +19,40 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 
 ## **Estrutura de Diretórios**
 
-
-/mateus-pdf/
-│
-├── main.py                 # Arquivo principal do Streamlit
-├── process_data.py         # Funções para processamento dos dados
-├── savings_carbon.py       # Cálculos de economia e carbono
-├── consumo.py              # Cálculos de consumo e geração de energia
-├── create_pdf.py           # Geração de PDF
-├── load_data.py            # Carregamento de dados
-└── image.py                # Geração de imagens
-
+   ```
+   /mateus-pdf/
+   │
+   ├── main.py                 # Arquivo principal do Streamlit
+   ├── process_data.py         # Funções para processamento dos dados
+   ├── savings_carbon.py       # Cálculos de economia e carbono
+   ├── consumo.py              # Cálculos de consumo e geração de energia
+   ├── create_pdf.py           # Geração de PDF
+   ├── load_data.py            # Carregamento de dados
+   └── image.py                # Geração de imagens
+   ```
 ## **Instalação e Execução**
-Para instalar e executar o projeto:
+
+Para instalar e executar o projeto, execute os seguintes comandos no terminal:
+
 1. **Clone o Repositório:**
-   ```bash
-   git clone https://github.com/seuusuario/mateus-pdf.git
-   cd mateus-pdf
-'''
-## **Instale as Dependências:**
-   ```bash
-pip install -r requirements.txt
-'''
-## **Execute a Aplicação:**
-   ```bash
-streamlit run main.py
-'''
+   - Copie e cole no terminal:
+     ```
+     git clone https://github.com/seuusuario/mateus-pdf.git
+     cd mateus-pdf
+     ```
+
+2. **Instale as Dependências:**
+   - Copie e cole no terminal:
+     ```
+     pip install -r requirements.txt
+     ```
+
+3. **Execute a Aplicação:**
+   - Copie e cole no terminal:
+     ```
+     streamlit run main.py
+     ```
+
 
 ## **Adicionando Novos Clientes e Instalações:**
 Para adicionar novos clientes ao sistema:
