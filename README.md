@@ -18,16 +18,17 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 - **FPDF:** Para geração de documentos em PDF.
 
 ## **Estrutura de Diretórios**
-/mateus-pdf
-│
-    ── main.py # Arquivo principal do Streamlit
-    ── process_data.py # Funções para processamento dos dados
-    ── savings_carbon.py # Cálculos de economia e carbono
-    ── consumo.py # Cálculos de consumo e geração de energia
-    ── create_pdf.py # Geração de PDF
-    ── load_data.py # Carregamento de dados
-    ── image.py # Geração de imagens
 
+```plaintext
+/mateus-pdf/
+│
+├── main.py                 # Arquivo principal do Streamlit
+├── process_data.py         # Funções para processamento dos dados
+├── savings_carbon.py       # Cálculos de economia e carbono
+├── consumo.py              # Cálculos de consumo e geração de energia
+├── create_pdf.py           # Geração de PDF
+├── load_data.py            # Carregamento de dados
+└── image.py                # Geração de imagens
 
 ## **Instalação e Execução**
 Para instalar e executar o projeto:
