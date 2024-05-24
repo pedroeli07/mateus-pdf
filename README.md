@@ -19,7 +19,7 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 
 ## **Estrutura de Diretórios**
 
-
+```bash
 /mateus-pdf/
 │
 ├── main.py                 # Arquivo principal do Streamlit
@@ -29,21 +29,22 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 ├── create_pdf.py           # Geração de PDF
 ├── load_data.py            # Carregamento de dados
 └── image.py                # Geração de imagens
-
+'''
 ## **Instalação e Execução**
 Para instalar e executar o projeto:
 1. **Clone o Repositório:**
    ```bash
-   git clone https://github.com/seuusuario/projeto-energia.git
+   git clone https://github.com/seuusuario/mateus-pdf.git
    cd mateus-pdf
-
+'''
 ## **Instale as Dependências:**
 ```plaintext
 pip install -r requirements.txt
 '''
 ## **Execute a Aplicação:**
+```plaintext
 streamlit run main.py
-
+'''
 
 ## **Adicionando Novos Clientes e Instalações:**
 Para adicionar novos clientes ao sistema:
