@@ -19,7 +19,7 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 
 ## **Estrutura de Diretórios**
 
-```bash
+```plaintext
 /mateus-pdf/
 │
 ├── main.py                 # Arquivo principal do Streamlit
