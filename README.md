@@ -19,7 +19,7 @@ Este projeto foi desenvolvido usando **Streamlit**, uma aplicação interativa q
 
 ## **Estrutura de Diretórios**
 
-```plaintext
+
 /mateus-pdf/
 │
 ├── main.py                 # Arquivo principal do Streamlit
@@ -38,8 +38,9 @@ Para instalar e executar o projeto:
    cd mateus-pdf
 
 ## **Instale as Dependências:**
+```plaintext
 pip install -r requirements.txt
-
+'''
 ## **Execute a Aplicação:**
 streamlit run main.py
 
