@@ -38,11 +38,11 @@ Para instalar e executar o projeto:
    cd mateus-pdf
 '''
 ## **Instale as Dependências:**
-```plaintext
+   ```bash
 pip install -r requirements.txt
 '''
 ## **Execute a Aplicação:**
-```plaintext
+   ```bash
 streamlit run main.py
 '''
 
