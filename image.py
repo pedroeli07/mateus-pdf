@@ -1,5 +1,4 @@
 from PIL import Image, ImageDraw, ImageFont
-import locale
 
 # Definição de caminhos para fontes e criação de objetos de fonte com diferentes tamanhos e estilos.
 fonte_bold = "fonts/OpenSans-Bold.ttf"
@@ -17,8 +16,8 @@ font_df3 = ImageFont.truetype(fonte_normal, size=18)
 color_light_gray = "#F0F0F0"
 color_dark_gray = "#D3D3D3"
 
-# Configuração de localidade para garantir a formatação correta de números e moedas.
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+def format_currency(value):
+    return f"R$ {value:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
 
 # Função para gerar uma imagem com informações dinâmicas adicionadas.
 def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR_KWH_CEMIG, DESCONTO, VALOR_KWH_FATURADO, economia_total, carbono_economia, cliente_text, mes_referencia, vencimento02):
@@ -43,7 +42,7 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
     draw.text((440, 667), mes_text, fill="black", font=font_regular1)
     vencimento_text = str(vencimento02)
     draw.text((360, 702), vencimento_text, fill="black", font=font_regular1)
-    economia_text = locale.currency(economia_total, grouping=True)
+    economia_text = format_currency(economia_total)
     draw.text((1020, 2240), economia_text, fill="black", font=font_bold_eco)
     carbono_inteiro = int(carbono_economia)
     carbono_text = f"{carbono_inteiro:,d} Kg".replace(',', '.')
@@ -51,7 +50,7 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
 
     # Repetição deste processo para outros textos dinâmicos, incluindo tratamento de texto e posicionamento.
     valor_a_pagar_inteiro = VALOR_A_PAGAR
-    valor_a_pagar_text = locale.currency(valor_a_pagar_inteiro, grouping=True)
+    valor_a_pagar_text = format_currency(valor_a_pagar_inteiro)
     draw.text((880, 1407), valor_a_pagar_text, fill="black", font=font_bold1)
     draw.text((297, 631), cliente_text, fill="black", font=font_regular1)
     KWH_CEMIG_text = str(VALOR_KWH_CEMIG)
