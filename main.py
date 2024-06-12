@@ -9,6 +9,7 @@ from consumo import calculate_consumption_generation
 from create_pdf import generate_pdf
 from load_data import load_data
 from image import generate_image
+from utils import ordenar_periodo
 
 # Configura o título da aplicação Streamlit.
 st.title("Processamento de Dados de Energia")
@@ -115,8 +116,10 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
               #  st.write("Dados do último mês processados:")
               #  st.dataframe(df_last_month)
 
+                # Dentro da parte relevante onde você usa `calculate_consumption_generation`:
                 df_copy = df.copy()
                 monthly_data = calculate_consumption_generation(df_copy)
+                monthly_data = ordenar_periodo(monthly_data)
                 st.write("Consumo e geração mensal:")
                 st.dataframe(monthly_data)
 
