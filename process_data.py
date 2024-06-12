@@ -10,13 +10,15 @@ def process_data(df, data_desejada, numero_instalacao):
     mes_periodo = data_desejada.strftime('%m/%Y')
     df_filtered = df[(df['Período'] == mes_periodo) & (df['Modalidade'].isin(numero_instalacao))]
 
-    # Remove linhas onde a compensação é zero
-    df_filtered = df_filtered[df_filtered['Compensação'] != 0]
+    # Depuração: Verificar dados filtrados por período e modalidade
+    st.write("Dados filtrados por período e modalidade:", df_filtered)
 
     # Arredonda os valores do saldo atual para duas casas decimais
-    df_filtered['Saldo Atual'] = df_filtered['Saldo Atual'].round(2)            
+    df_filtered['Saldo Atual'] = df_filtered['Saldo Atual'].round(2)
 
     # Armazena a data desejada no estado da sessão para uso posterior
     st.session_state.data_desejada = data_desejada
 
     return df_filtered, mes_periodo
+
+
