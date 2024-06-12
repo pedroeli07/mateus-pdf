@@ -80,11 +80,13 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
 
         # Se o período e a instalação foram confirmados, permite ao usuário ajustar os valores de KWh e desconto.
         if 'data_desejada' in st.session_state and 'numero_instalacao' in st.session_state:
-            # Utiliza sliders e inputs para permitir ajustes nos valores de kWh da Cemig e percentual de desconto.
-            VALOR_KWH_CEMIG = st.slider("Digite o valor do KWh da Cemig (R$):", min_value=0.1000, max_value=2.00, value=0.956, step=0.001, format="%.3f")
-            VALOR_KWH_CEMIG = st.number_input("Digite o valor do KWh da Cemig (R$):", min_value=0.1000, max_value=2.00, value=VALOR_KWH_CEMIG, step=0.001, format="%.3f")
-            DESCONTO = st.slider("Digite o valor do desconto (%):", min_value=0, max_value=100, value=20, step=1)
-            DESCONTO = st.number_input("Digite o valor do desconto (%):", min_value=0, max_value=100, value=DESCONTO, step=1)
+           # Definir valores padrão
+            VALOR_KWH_CEMIG_PADRAO = 0.956
+            DESCONTO_PADRAO = 20
+
+            # Utiliza inputs para permitir ajustes nos valores de kWh da Cemig e percentual de desconto.
+            VALOR_KWH_CEMIG = st.number_input("Digite o valor do KWh da Cemig (R$):", min_value=0.1000, max_value=2.00, value=VALOR_KWH_CEMIG_PADRAO, step=0.001, format="%.3f")
+            DESCONTO = st.number_input("Digite o valor do desconto (%):", min_value=0, max_value=100, value=DESCONTO_PADRAO, step=1)
 
             # Botão para confirmar valores ajustados.
             if st.button('Confirmar Valores'):
@@ -210,3 +212,4 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                         # Gerar o PDF e exibir o link para download
                         pdf_output = generate_pdf(img)
                         st.download_button(label="Baixar PDF", data=pdf_output, file_name=f"{cliente_text}{VALOR_A_PAGAR}.pdf", mime="application/pdf")
+
