@@ -82,6 +82,9 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
 
     # Ajustando a altura das células com base no número de linhas no DataFrame
     num_rows = len(monthly_data01)
+    if num_rows == 0:
+        num_rows = 1  # Prevenção contra divisão por zero
+
     cell_height_df1 = min(cell_height_base1, max_height1 // num_rows)
     
     columns = list(monthly_data01.columns)
@@ -121,9 +124,12 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
             draw.text(text_position, cell_text, fill="black", font=text_font)
 
 
-    preprocessed_df.drop(['Transferido', 'Geração'], axis=1, inplace=True)
+    # preprocessed_df.drop(['Transferido', 'Geração'], axis=1, inplace=True)
+    # preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
+  
+    # preprocessed_df = df_filtered2.copy()
+  #  preprocessed_df.drop(['Transferido', 'Geração'], axis=1, inplace=True)
     preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
-
     dataframe_position = (220, 868) # Exemplo de posição inicial do DataFrame na imagem
 
     cell_width_df = 180
@@ -132,6 +138,9 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
 
     # Ajustando a altura das células com base no número de linhas no DataFrame
     num_rows = len(preprocessed_df)
+    if num_rows == 0:
+        num_rows = 1  # Prevenção contra divisão por zero
+
     cell_height_df = min(cell_height_base, max_height // num_rows)
     
     # Desenhando colunas e nomes de colunas
