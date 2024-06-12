@@ -1,4 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
+import pandas as pd
+from utils import ordenar_periodo
 
 # Definição de caminhos para fontes e criação de objetos de fonte com diferentes tamanhos e estilos.
 fonte_bold = "fonts/OpenSans-Bold.ttf"
@@ -69,16 +71,18 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
 
     # Processamento de DataFrame para exibição em tabela na imagem, com formatação de células e textos.
     # Cada célula é desenhada individualmente, textos são centralizados.
+    # Ordenar e formatar o período
+    monthly_data = ordenar_periodo(monthly_data)
 
-    # Selecionar apenas os últimos 11 meses com registro
+    # Selecionar apenas os últimos 12 meses com registro
     monthly_data01 = monthly_data.iloc[-12:]
 
     dataframe_position1 = (225, 1130)
 
- # Exemplo de posição inicial do DataFrame na imagem
+    # Exemplo de posição inicial do DataFrame na imagem
     cell_width_df1 = 180 
     cell_height_base1 = 90  # Altura base para uma linha
-    max_height1 = 330# Altura máxima disponível para o DataFrame na imagem
+    max_height1 = 330 # Altura máxima disponível para o DataFrame na imagem
 
     # Ajustando a altura das células com base no número de linhas no DataFrame
     num_rows = len(monthly_data01)
@@ -86,7 +90,7 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
         num_rows = 1  # Prevenção contra divisão por zero
 
     cell_height_df1 = min(cell_height_base1, max_height1 // num_rows)
-    
+
     columns = list(monthly_data01.columns)
     for j, column_name in enumerate(columns):
         text_width = draw.textlength(str(column_name), font=font_bold_dff)
@@ -98,7 +102,7 @@ def generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR
             outline="black"
         )
         draw.text((text_position_x, dataframe_position1[1] + 2), str(column_name), fill="black", font=font_bold_df)
-    
+
     for i, (_, row) in enumerate(monthly_data01.iterrows()):
         for j, cell_value in enumerate(row):
             background_color_df = color_dark_gray if i == len(monthly_data01) - 1 else color_light_gray
