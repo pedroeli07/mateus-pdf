@@ -7,7 +7,7 @@ def format_value(value):
         value = float(value)
         if value.is_integer():
             return int(value)
-        return f"{value:.2f}"
+        return round(value, 2)
     except (ValueError, TypeError):
         return value
 
@@ -23,7 +23,9 @@ font_bold_carb = ImageFont.truetype(fonte_bold, size=38)
 font_bold_eco = ImageFont.truetype(fonte_bold, size=40)
 font_bold12 = ImageFont.truetype(fonte_bold, size=49)
 font_bold_df = ImageFont.truetype(fonte_bold, size=13)
+font_bold_df222 = ImageFont.truetype(fonte_bold, size=16)
 font_bold_dff = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", size=13)
+font_bold_dff22222 = ImageFont.truetype("fonts/OpenSans-Bold.ttf", size=18)
 font_df = ImageFont.truetype(fonte_normal, size=13)
 font_bold_df3 = ImageFont.truetype(fonte_bold, size=18)
 font_df3 = ImageFont.truetype(fonte_normal, size=18)
@@ -115,18 +117,18 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
     columns = list(monthly_data01.columns)
     for j, column_name in enumerate(columns):
         text_width = draw.textlength(str(column_name), font=font_bold_dff)
-        text_position_x = dataframe_position1[0] + j * cell_width_df1 + (cell_width_df1 - text_width) // 2
+        text_position_x = dataframe_position1[0] + j * cell_width_df1 + (cell_width_df1 - text_width) // 2 - 10
         draw.rectangle(
             [(dataframe_position1[0] + j * cell_width_df1, dataframe_position1[1]),
             (dataframe_position1[0] + (j + 1) * cell_width_df1, dataframe_position1[1] + cell_height_df1)],
-            fill=color_dark_gray,
+            fill="#c1f0f0",     
             outline="black"
         )
-        draw.text((text_position_x, dataframe_position1[1] + 2), str(column_name), fill="black", font=font_bold_df)
+        draw.text((text_position_x, dataframe_position1[1] + 5), str(column_name), fill="black", font=font_bold_df222)
     # Para o dataframe monthly_data
     for i, (_, row) in enumerate(monthly_data01.iterrows()):
         for j, cell_value in enumerate(row):
-            background_color_df = color_dark_gray if i == len(monthly_data01) - 1 else color_light_gray
+            background_color_df = "#c1e0ff" if i == len(monthly_data01) - 1 else color_light_gray
             draw.rectangle(
                 [(dataframe_position1[0] + j * cell_width_df1, dataframe_position1[1] + (i + 1) * cell_height_df1),
                 (dataframe_position1[0] + (j + 1) * cell_width_df1, dataframe_position1[1] + (i + 2) * cell_height_df1)],
@@ -137,7 +139,7 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
             if i == len(monthly_data01) - 1:
                 cell_text = cell_text.upper() if columns[j] == "Período" else cell_text
                 text_width = draw.textlength(cell_text, font=font_bold_df)
-                text_font = font_bold_df
+                text_font = font_bold_dff22222
             else:
                 text_width = draw.textlength(cell_text, font=font_df)
                 text_font = font_df
@@ -149,13 +151,12 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
             draw.text(text_position, cell_text, fill="black", font=text_font)
 
     # Definir as posições e tamanhos das células dinamicamente
-    dataframe_position = (220, 878)  # Exemplo de posição inicial do DataFrame na imagem
-
+    dataframe_position = (220, 870)  # Exemplo de posição inicial do DataFrame na imagem
     total_width = 1250  # Largura total disponível para o DataFrame na imagem
+    max_height = 115  # Altura máxima disponível para o DataFrame na imagem
+    cell_height_base = 90  # Altura base para uma linha
 
-    cell_height_base = 70  # Altura base para uma linha
-    max_height = 95  # Altura máxima disponível para o DataFrame na imagem
- 
+    
     # Ajuste do DataFrame para exibição com as colunas selecionadas
     if not selected_columns:
         preprocessed_df = pd.DataFrame(columns=default_columns)  # DataFrame vazio
@@ -163,17 +164,15 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
     else:
         preprocessed_df = preprocessed_df[selected_columns].copy()
         cell_width_df = total_width // len(selected_columns)  # Ajustar a largura das células com base no número de colunas
-   
+
+
     # Ajustando a altura das células com base no número de linhas no DataFrame
     num_rows = len(preprocessed_df)
     if num_rows == 0:
         num_rows = 1  # Prevenção contra divisão por zero
-    
-    # Arredondar os valores para uma casa decimal
-    preprocessed_df = preprocessed_df.round(2)
-   
-    cell_height_df = min(cell_height_base, max_height // num_rows)
 
+    cell_height_df = min(cell_height_base, max_height // num_rows)
+   
     # Desenhando colunas e nomes de colunas
     columns = list(preprocessed_df.columns)
     for j, column_name in enumerate(columns):
@@ -182,23 +181,33 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
         draw.rectangle(
             [(dataframe_position[0] + j * cell_width_df, dataframe_position[1]),
             (dataframe_position[0] + (j + 1) * cell_width_df, dataframe_position[1] + cell_height_df)],
-            fill="darkgray", outline="black"
+            fill="#c1f0f0", outline="black"
         )
         draw.text((text_position_x, dataframe_position[1] + (cell_height_df - font_bold_df3.size) // 2),
-                str(column_name), fill="white", font=font_bold_df3)
-    # Para o dataframe preprocessed_df
+                str(column_name), fill="BLACK", font=font_bold_df3)
+
+    # Desenhando dados do DataFrame
     for i, (_, row) in enumerate(preprocessed_df.iterrows()):
-        background_color = "lightgray" if i % 2 == 0 else "darkgray"
+        if i == 0:
+            background_color = "white"  # Verde piscina claro para a primeira linha
+            text_font = font_df3  # Fonte padrão
+        elif i == len(preprocessed_df) - 1:
+            background_color = "#c1e0ff"  # Azul piscina claro para a última linha
+            text_font = font_bold_dff22222  # Usar fonte em negrito para a última linha
+        else:
+            background_color = "white" if i % 2 == 0 else "white"
+            text_font = font_df3  # Fonte padrão para as demais linhas
+
         for j, cell_value in enumerate(row):
             cell_text = str(format_value(cell_value))
-            text_width = draw.textlength(cell_text, font=font_df3)
+            text_width = draw.textlength(cell_text, font=text_font)
             text_position_x = dataframe_position[0] + j * cell_width_df + (cell_width_df - text_width) // 2
-            text_position_y = dataframe_position[1] + (i + 1) * cell_height_df + (cell_height_df - font_df3.size) // 2
+            text_position_y = dataframe_position[1] + (i + 1) * cell_height_df + (cell_height_df - text_font.size) // 2
             draw.rectangle(
                 [(dataframe_position[0] + j * cell_width_df, dataframe_position[1] + (i + 1) * cell_height_df),
                 (dataframe_position[0] + (j + 1) * cell_width_df, dataframe_position[1] + (i + 2) * cell_height_df)],
                 fill=background_color, outline="black"
             )
-            draw.text((text_position_x, text_position_y), cell_text, fill="black", font=font_df3)
+            draw.text((text_position_x, text_position_y), cell_text, fill="BLACK", font=text_font)
 
     return img  # Finalização e retorno da imagem modificada
