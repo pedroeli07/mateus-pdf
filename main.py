@@ -8,7 +8,7 @@ from savings_carbon import calculate_total_savings_and_carbon_emissions
 from consumo import calculate_consumption_generation
 from create_pdf import generate_pdf
 from load_data import load_data
-from image import generate_image
+from image import generate_image, format_currency
 from utils import ordenar_periodo
 
 # Configura o título da aplicação Streamlit.
@@ -33,10 +33,10 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
         # Verificar os dados filtrados
         st.write("Dados Filtrados:", df_filtered2)
 
-        # Processar o DataFrame preprocessed_df
-        preprocessed_df = df_filtered2.copy()
-        preprocessed_df.drop(['Transferido', 'Geração'], axis=1, inplace=True)
-        preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
+        # # Processar o DataFrame preprocessed_df
+        # preprocessed_df = df_filtered2.copy()
+        # preprocessed_df.drop(['Transferido', 'Geração'], axis=1, inplace=True)
+        # preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
 
         # Verificar o DataFrame preprocessed_df
         # st.write("preprocessed_df:", preprocessed_df)
@@ -161,24 +161,51 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                     ultimo_periodo = ultimo_periodo[:5]
              
                     ultimo_periodo = datetime.strptime(ultimo_periodo, '%m/%y')
-                # Adicionar um multiselect para o usuário escolher as colunas a serem exibidas
-                default_columns = ['Modalidade', 'Instalação', 'Período', 'Consumo', 'Compensação', 'Recebimento', 'Saldo Atual']
-                selected_columns = st.multiselect("Selecione as colunas a serem exibidas:", default_columns, default=default_columns)
+               
 
                 # Processar o DataFrame preprocessed_df
                 preprocessed_df = df_filtered2.copy()
+                preprocessed_df.drop(['Transferido', 'Geração'], axis=1, inplace=True)
                 preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
-             
+
                 # Arredondar os valores para uma casa decimal
                 preprocessed_df = preprocessed_df.round(2)
-               
+
+                # Calcular o valor (R$) com base na seleção do usuário
+                if st.session_state.calculo_tipo == 'Recebimento':
+                    preprocessed_df['Valor (R$)'] = preprocessed_df['Recebimento'] * VALOR_KWH_FATURADO
+                else:
+                    preprocessed_df['Valor (R$)'] = preprocessed_df['Compensação'] * VALOR_KWH_FATURADO
+
+                # Adicionar um multiselect para o usuário escolher as colunas a serem exibidas
+                default_columns = ['Modalidade', 'Instalação', 'Período', 'Consumo', 'Compensação', 'Recebimento', 'Saldo Atual', 'Valor (R$)']
+                selected_columns = st.multiselect("Selecione as colunas a serem exibidas:", default_columns, default=default_columns)
+
                 # Verificar se alguma coluna foi selecionada
                 if not selected_columns:
                     preprocessed_df_filtered = pd.DataFrame(columns=default_columns)
                 else:
                     # Filtrar o DataFrame com as colunas selecionadas para exibição
                     preprocessed_df_filtered = preprocessed_df[selected_columns].copy()
-                
+
+                # Remover símbolos da coluna 'Valor (R$)' para somar
+                preprocessed_df_filtered['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].apply(lambda x: float(x.replace('R$', '').replace('.', '').replace(',', '.')) if isinstance(x, str) else x)
+
+                # Adicionar linha de totais
+                total_row = preprocessed_df_filtered.sum(numeric_only=True)
+                total_row['Modalidade'] = 'Total'
+                total_row['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].sum()
+                total_row['Valor (R$)'] = format_currency(total_row['Valor (R$)'])
+                for col in preprocessed_df_filtered.select_dtypes(include=['object']).columns:
+                    if col != 'Modalidade':
+                        total_row[col] = ''  # Para as colunas de texto, preencher com strings vazias
+
+                # Concatenar a linha de total ao DataFrame
+                preprocessed_df_filtered = pd.concat([preprocessed_df_filtered, pd.DataFrame(total_row).T], ignore_index=True)
+
+                # Formatar a coluna 'Valor (R$)' após a soma
+                preprocessed_df_filtered['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].apply(lambda x: format_currency(x) if isinstance(x, (int, float)) else x)
+
                 # Atualizar a chamada para a função que gera a imagem
                 img = generate_image(preprocessed_df_filtered, monthly_data, selected_columns, default_columns, st.session_state.calculo_tipo, RECEBIDO, VALOR_A_PAGAR, VALOR_KWH_CEMIG, DESCONTO, VALOR_KWH_FATURADO, economia_total, carbono_economia, cliente_text, mes_referencia, vencimento02)
 
