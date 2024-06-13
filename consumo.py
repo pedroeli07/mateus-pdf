@@ -62,3 +62,4 @@ def calculate_consumption_generation(df_copy, calc_type="Geração"):
 
     return monthly_data
 
+
