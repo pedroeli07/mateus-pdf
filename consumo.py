@@ -1,3 +1,12 @@
+def format_value(value):
+    try:
+        value = float(value)
+        if value.is_integer():
+            return int(value)
+        return f"{value:.2f}"
+    except (ValueError, TypeError):
+        return value
+
 def calculate_consumption_generation(df_copy, calc_type="Geração"):
     if calc_type == "Geração":
         aggregation = {
@@ -33,22 +42,23 @@ def calculate_consumption_generation(df_copy, calc_type="Geração"):
         lambda x: f"{months_map[x.split('/')[0]]}/{x.split('/')[1]}"
     )
     
-    # Arredondar os valores para uma casa decimal
-    monthly_data = monthly_data.round(1)
-    
     # Renomeia as colunas para inclusão das unidades
     monthly_data = monthly_data.rename(columns=columns_rename)
     
-    # Calcula a média do consumo e geração/compensação e adiciona ao dataframe como uma nova linha 'Média'
-    average_consumption = monthly_data['Consumo [kWh]'].mean()
+    # Calcula a média do consumo e geração/compensação
+    average_consumption = monthly_data['Consumo [kWh]'].astype(float).mean()
     if calc_type == "Geração":
-        average_generation = monthly_data['Energia Injetada [kWh]'].mean()
-        monthly_data.loc['Média'] = [int(average_consumption), int(average_generation)]
+        average_generation = monthly_data['Energia Injetada [kWh]'].astype(float).mean()
+        monthly_data.loc['Média'] = [average_consumption, average_generation]
     elif calc_type == "Compensação":
-        average_compensacao = monthly_data['Compensação [kWh]'].mean()
-        monthly_data.loc['Média'] = [int(average_consumption), int(average_compensacao)]
+        average_compensacao = monthly_data['Compensação [kWh]'].astype(float).mean()
+        monthly_data.loc['Média'] = [average_consumption, average_compensacao]
+    
+    # Arredondar os valores para uma casa decimal e formatar os valores
+    monthly_data = monthly_data.applymap(format_value)
     
     # Reseta o índice para transformar os períodos em uma coluna novamente
     monthly_data.reset_index(inplace=True)
 
     return monthly_data
+
