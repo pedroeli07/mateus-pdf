@@ -24,7 +24,12 @@ def ordenar_periodo(mes_data, coluna='Período'):
 
     # Converter os nomes dos meses de português para inglês para ordenação
     non_average.loc[:, coluna] = non_average[coluna].apply(lambda x: x.replace(x[:3], month_mapping_pt_to_en[x[:3]]))
-    non_average.loc[:, coluna] = pd.to_datetime(non_average[coluna], format='%b/%Y')
+    non_average.loc[:, coluna] = pd.to_datetime(non_average[coluna], format='%b/%Y', errors='coerce')
+    
+    # Verificar se a conversão para datetime foi bem-sucedida
+    if non_average[coluna].isnull().any():
+        raise ValueError("Falha ao converter a coluna para datetime. Verifique os valores na coluna.")
+    
     non_average = non_average.sort_values(by=coluna).reset_index(drop=True)
     non_average.loc[:, coluna] = non_average[coluna].dt.strftime('%b/%Y')
 
