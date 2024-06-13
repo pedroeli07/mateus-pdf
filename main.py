@@ -10,7 +10,7 @@ from create_pdf import generate_pdf
 from load_data import load_data
 from image import generate_image
 from utils import ordenar_periodo
-
+''
 # Configura o título da aplicação Streamlit.
 st.title("Processamento de Dados de Energia")
 
@@ -74,7 +74,7 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
             st.write(f"Lojas desejadas: {st.session_state.numero_instalacao}")
             if 'calculo_tipo' in st.session_state and 'RECEBIDO' in st.session_state:
                 st.write(f"Cálculo selecionado: {st.session_state.calculo_tipo}")
-                st.write(f"RECEBIDO: {st.session_state.RECEBIDO} kWh")
+                st.write(f"Qtde kWh faturado: {st.session_state.RECEBIDO} kWh")
             else:
                 st.warning("Selecione o tipo de cálculo primeiro.")
 
@@ -106,7 +106,7 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
             if 'RECEBIDO' in st.session_state:
                 RECEBIDO = st.session_state.RECEBIDO
                 VALOR_A_PAGAR = round(RECEBIDO * VALOR_KWH_FATURADO, 2)
-                st.write(f"Recebido: {RECEBIDO} kWH ")
+                st.write(f"Qtde kWh faturado: {RECEBIDO} kWh ")
                 st.write(f"Valor a Pagar: R$ {VALOR_A_PAGAR}")
 
                 # Processa os dados para o último mês e calcula o consumo e a geração mensal.
@@ -158,15 +158,34 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                     st.session_state.data_desejada02 = data_desejada02
                     st.success('Data de upload confirmada!')
 
-                mes_referencia = data_desejada02.strftime("%m/%Y")
+                # Calcular vencimento (7 dias após a data desejada)
                 vencimento02 = (data_desejada02 + timedelta(days=7)).strftime("%d/%m/%Y")
 
-                # Gera a imagem com todos os dados processados e configurados.
+                # Calcular o mês de referência como o mês anterior ao mês de data_desejada02
+                mes_referencia = (data_desejada02.replace(day=1) - timedelta(days=1)).strftime("%m/%Y")
+
+                # Gera a imagem com todos os dados processados e configurados
                 if len(ultimo_periodo) > 5:
                     ultimo_periodo = ultimo_periodo[:5]
+             
                     ultimo_periodo = datetime.strptime(ultimo_periodo, '%m/%y')
+                # Adicionar um multiselect para o usuário escolher as colunas a serem exibidas
+                default_columns = ['Modalidade', 'Instalação', 'Período', 'Consumo', 'Compensação', 'Recebimento', 'Saldo Atual']
+                selected_columns = st.multiselect("Selecione as colunas a serem exibidas:", default_columns, default=default_columns)
 
-                img = generate_image(preprocessed_df, monthly_data, RECEBIDO, VALOR_A_PAGAR, VALOR_KWH_CEMIG, DESCONTO, VALOR_KWH_FATURADO, economia_total, carbono_economia, cliente_text, mes_referencia, vencimento02)
+                # Processar o DataFrame preprocessed_df
+                preprocessed_df = df_filtered2.copy()
+                preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
+
+                # Verificar se alguma coluna foi selecionada
+                if not selected_columns:
+                    preprocessed_df_filtered = pd.DataFrame(columns=default_columns)
+                else:
+                    # Filtrar o DataFrame com as colunas selecionadas para exibição
+                    preprocessed_df_filtered = preprocessed_df[selected_columns].copy()
+
+                # Atualizar a chamada para a função que gera a imagem
+                img = generate_image(preprocessed_df_filtered, monthly_data, selected_columns, default_columns, st.session_state.calculo_tipo, RECEBIDO, VALOR_A_PAGAR, VALOR_KWH_CEMIG, DESCONTO, VALOR_KWH_FATURADO, economia_total, carbono_economia, cliente_text, mes_referencia, vencimento02)
 
                 st.image(img, caption="Imagem gerada")
 
