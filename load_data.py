@@ -49,3 +49,5 @@ def load_data():
         return pd.DataFrame()  # Retorna um DataFrame vazio se nenhum arquivo for carregado
 
 
+
+
