@@ -226,4 +226,3 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                         # Gerar o PDF e exibir o link para download
                         pdf_output = generate_pdf(img)
                         st.download_button(label="Baixar PDF", data=pdf_output, file_name=f"{cliente_text}{VALOR_A_PAGAR}.pdf", mime="application/pdf")
-
