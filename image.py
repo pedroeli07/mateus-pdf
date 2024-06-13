@@ -2,6 +2,16 @@ from PIL import Image, ImageDraw, ImageFont
 import pandas as pd
 from utils import ordenar_periodo
 
+def format_value(value):
+    try:
+        value = float(value)
+        if value.is_integer():
+            return int(value)
+        return f"{value:.2f}"
+    except (ValueError, TypeError):
+        return value
+
+
 # Definição de caminhos para fontes e criação de objetos de fonte com diferentes tamanhos e estilos.
 fonte_bold = "fonts/OpenSans-Bold.ttf"
 fonte_normal = "fonts/OpenSans-Regular.ttf"
@@ -113,7 +123,7 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
             outline="black"
         )
         draw.text((text_position_x, dataframe_position1[1] + 2), str(column_name), fill="black", font=font_bold_df)
-
+    # Para o dataframe monthly_data
     for i, (_, row) in enumerate(monthly_data01.iterrows()):
         for j, cell_value in enumerate(row):
             background_color_df = color_dark_gray if i == len(monthly_data01) - 1 else color_light_gray
@@ -123,7 +133,7 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
                 fill=background_color_df,
                 outline="black"
             )
-            cell_text = str(cell_value)
+            cell_text = str(format_value(cell_value))
             if i == len(monthly_data01) - 1:
                 cell_text = cell_text.upper() if columns[j] == "Período" else cell_text
                 text_width = draw.textlength(cell_text, font=font_bold_df)
@@ -158,7 +168,10 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
     num_rows = len(preprocessed_df)
     if num_rows == 0:
         num_rows = 1  # Prevenção contra divisão por zero
-
+    
+    # Arredondar os valores para uma casa decimal
+    preprocessed_df = preprocessed_df.round(2)
+   
     cell_height_df = min(cell_height_base, max_height // num_rows)
 
     # Desenhando colunas e nomes de colunas
@@ -173,12 +186,11 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
         )
         draw.text((text_position_x, dataframe_position[1] + (cell_height_df - font_bold_df3.size) // 2),
                 str(column_name), fill="white", font=font_bold_df3)
-
-    # Desenhando dados do DataFrame
+    # Para o dataframe preprocessed_df
     for i, (_, row) in enumerate(preprocessed_df.iterrows()):
         background_color = "lightgray" if i % 2 == 0 else "darkgray"
         for j, cell_value in enumerate(row):
-            cell_text = str(cell_value)
+            cell_text = str(format_value(cell_value))
             text_width = draw.textlength(cell_text, font=font_df3)
             text_position_x = dataframe_position[0] + j * cell_width_df + (cell_width_df - text_width) // 2
             text_position_y = dataframe_position[1] + (i + 1) * cell_height_df + (cell_height_df - font_df3.size) // 2
