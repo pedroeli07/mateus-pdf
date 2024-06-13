@@ -162,7 +162,6 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
              
                     ultimo_periodo = datetime.strptime(ultimo_periodo, '%m/%y')
                
-
                 # Processar o DataFrame preprocessed_df
                 preprocessed_df = df_filtered2.copy()
                 preprocessed_df.drop(['Transferido', 'Geração'], axis=1, inplace=True)
@@ -177,8 +176,11 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                 else:
                     preprocessed_df['Valor (R$)'] = preprocessed_df['Compensação'] * VALOR_KWH_FATURADO
 
+                # Renomear a coluna 'Modalidade' para 'Referência'
+                preprocessed_df.rename(columns={'Modalidade': 'Referência'}, inplace=True)
+
                 # Adicionar um multiselect para o usuário escolher as colunas a serem exibidas
-                default_columns = ['Modalidade', 'Instalação', 'Período', 'Consumo', 'Compensação', 'Recebimento', 'Saldo Atual', 'Valor (R$)']
+                default_columns = ['Referência', 'Instalação', 'Período', 'Consumo', 'Compensação', 'Recebimento', 'Saldo Atual', 'Valor (R$)']
                 selected_columns = st.multiselect("Selecione as colunas a serem exibidas:", default_columns, default=default_columns)
 
                 # Verificar se alguma coluna foi selecionada
@@ -188,23 +190,29 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                     # Filtrar o DataFrame com as colunas selecionadas para exibição
                     preprocessed_df_filtered = preprocessed_df[selected_columns].copy()
 
-                # Remover símbolos da coluna 'Valor (R$)' para somar
-                preprocessed_df_filtered['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].apply(lambda x: float(x.replace('R$', '').replace('.', '').replace(',', '.')) if isinstance(x, str) else x)
+                # Verificar se a coluna 'Valor (R$)' está presente
+                if 'Valor (R$)' in preprocessed_df_filtered.columns:
+                    # Remover símbolos da coluna 'Valor (R$)' para somar
+                    preprocessed_df_filtered['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].apply(lambda x: float(x.replace('R$', '').replace('.', '').replace(',', '.')) if isinstance(x, str) else x)
 
                 # Adicionar linha de totais
                 total_row = preprocessed_df_filtered.sum(numeric_only=True)
-                total_row['Modalidade'] = 'Total'
-                total_row['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].sum()
-                total_row['Valor (R$)'] = format_currency(total_row['Valor (R$)'])
+                total_row['Referência'] = 'Total'
+
+                if 'Valor (R$)' in preprocessed_df_filtered.columns:
+                    total_row['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].sum()
+                    total_row['Valor (R$)'] = format_currency(total_row['Valor (R$)'])
+
                 for col in preprocessed_df_filtered.select_dtypes(include=['object']).columns:
-                    if col != 'Modalidade':
+                    if col != 'Referência':
                         total_row[col] = ''  # Para as colunas de texto, preencher com strings vazias
 
                 # Concatenar a linha de total ao DataFrame
                 preprocessed_df_filtered = pd.concat([preprocessed_df_filtered, pd.DataFrame(total_row).T], ignore_index=True)
 
                 # Formatar a coluna 'Valor (R$)' após a soma
-                preprocessed_df_filtered['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].apply(lambda x: format_currency(x) if isinstance(x, (int, float)) else x)
+                if 'Valor (R$)' in preprocessed_df_filtered.columns:
+                    preprocessed_df_filtered['Valor (R$)'] = preprocessed_df_filtered['Valor (R$)'].apply(lambda x: format_currency(x) if isinstance(x, (int, float)) else x)
 
                 # Atualizar a chamada para a função que gera a imagem
                 img = generate_image(preprocessed_df_filtered, monthly_data, selected_columns, default_columns, st.session_state.calculo_tipo, RECEBIDO, VALOR_A_PAGAR, VALOR_KWH_CEMIG, DESCONTO, VALOR_KWH_FATURADO, economia_total, carbono_economia, cliente_text, mes_referencia, vencimento02)
