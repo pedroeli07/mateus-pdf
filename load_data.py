@@ -25,9 +25,10 @@ def load_data():
         modalidade_map = {
             "3013110767": "GBBH - Lj 02",
             "3013096188": "GBBH - Lj 01",
-            "3004402254": "Cliente 2 - Lj 01",
-            "3011883117": "Cliente 2 - Lj 02",
-            "3014657899": "Cliente 2 - Lj 03"
+            "3004402254": "Bebedouro",
+            "3011883117": "Porks Savassi",
+            "3014657899": "Porks Castelo"
+
         }
 
         for index, row in df.iterrows():
@@ -46,4 +47,5 @@ def load_data():
         return df
     else:
         return pd.DataFrame()  # Retorna um DataFrame vazio se nenhum arquivo for carregado
+
 
