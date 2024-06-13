@@ -23,7 +23,7 @@ font_bold_carb = ImageFont.truetype(fonte_bold, size=38)
 font_bold_eco = ImageFont.truetype(fonte_bold, size=40)
 font_bold12 = ImageFont.truetype(fonte_bold, size=49)
 font_bold_df = ImageFont.truetype(fonte_bold, size=13)
-font_bold_df222 = ImageFont.truetype(fonte_bold, size=16)
+font_bold_df222 = ImageFont.truetype(fonte_bold, size=15)
 font_bold_dff = ImageFont.truetype("fonts/OpenSans-ExtraBold.ttf", size=13)
 font_bold_dff22222 = ImageFont.truetype("fonts/OpenSans-Bold.ttf", size=18)
 font_df = ImageFont.truetype(fonte_normal, size=13)
@@ -117,7 +117,7 @@ def generate_image(preprocessed_df, monthly_data, selected_columns, default_colu
     columns = list(monthly_data01.columns)
     for j, column_name in enumerate(columns):
         text_width = draw.textlength(str(column_name), font=font_bold_dff)
-        text_position_x = dataframe_position1[0] + j * cell_width_df1 + (cell_width_df1 - text_width) // 2 - 10
+        text_position_x = dataframe_position1[0] + j * cell_width_df1 + (cell_width_df1 - text_width) // 2 - 9
         draw.rectangle(
             [(dataframe_position1[0] + j * cell_width_df1, dataframe_position1[1]),
             (dataframe_position1[0] + (j + 1) * cell_width_df1, dataframe_position1[1] + cell_height_df1)],
