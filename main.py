@@ -10,7 +10,7 @@ from create_pdf import generate_pdf
 from load_data import load_data
 from image import generate_image
 from utils import ordenar_periodo
-''
+
 # Configura o título da aplicação Streamlit.
 st.title("Processamento de Dados de Energia")
 
@@ -39,7 +39,7 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
         preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
 
         # Verificar o DataFrame preprocessed_df
-       # st.write("preprocessed_df:", preprocessed_df)
+        # st.write("preprocessed_df:", preprocessed_df)
 
         # Calcula a soma das colunas 'Recebimento' e 'Compensação'
         RECEBIDO_RECEBIMENTO = int(df_filtered2['Recebimento'].sum())
@@ -50,7 +50,6 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
             st.session_state.data_desejada = data_desejada
             st.session_state.numero_instalacao = numero_instalacao
             st.success('Período e lojas confirmados!')
-
 
         # Botões para selecionar o método de cálculo
         col1, col2 = st.columns(2)
@@ -67,7 +66,6 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                 st.session_state.calculo_tipo = 'Compensação'
                 st.success('Cálculo selecionado: Compensação')
 
-            
         # Exibe os dados confirmados.
         if 'numero_instalacao' in st.session_state and 'data_desejada' in st.session_state:
             st.write(f"Período Referência selecionado: {st.session_state.data_desejada}")
@@ -80,7 +78,7 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
 
         # Se o período e a instalação foram confirmados, permite ao usuário ajustar os valores de KWh e desconto.
         if 'data_desejada' in st.session_state and 'numero_instalacao' in st.session_state:
-           # Definir valores padrão
+            # Definir valores padrão
             VALOR_KWH_CEMIG_PADRAO = 0.956
             DESCONTO_PADRAO = 20
 
@@ -96,7 +94,7 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
 
             # Calcula o valor faturado com base no desconto.
             VALOR_KWH_FATURADO = round(VALOR_KWH_CEMIG - ((VALOR_KWH_CEMIG * DESCONTO) / 100), 3)
-            
+
             # Exibe os valores ajustados e calculados.
             st.write(f"Valor KWh Cemig confirmado: R${VALOR_KWH_CEMIG}")
             st.write(f"Desconto confirmado: {DESCONTO}%")
@@ -111,17 +109,13 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
 
                 # Processa os dados para o último mês e calcula o consumo e a geração mensal.
                 df_last_month, ultimo_periodo = process_data(df, st.session_state.data_desejada, st.session_state.numero_instalacao)
-                
-                # Adicionando depuração para verificar dados do último mês
-              #  st.write("Data Desejada:", st.session_state.data_desejada)
-             #   st.write("Número de Instalação:", st.session_state.numero_instalacao)
-              #  st.write("Dados do último mês processados:")
-              #  st.dataframe(df_last_month)
 
-                # Dentro da parte relevante onde você usa `calculate_consumption_generation`:
+                # Determinar o tipo de cálculo baseado na seleção do usuário
+                calc_type = "Geração" if st.session_state.calculo_tipo == 'Recebimento' else "Compensação"
                 df_copy = df.copy()
-                monthly_data = calculate_consumption_generation(df_copy)
+                monthly_data = calculate_consumption_generation(df_copy, calc_type)
                 monthly_data = ordenar_periodo(monthly_data)
+
                 st.write("Consumo e geração mensal:")
                 st.dataframe(monthly_data)
 
@@ -131,8 +125,6 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                 # Calcula a economia total e a emissão de carbono evitada.
                 economia_total, carbono_economia = calculate_total_savings_and_carbon_emissions(df_copy02, data_desejada, VALOR_KWH_CEMIG, VALOR_KWH_FATURADO)
                
-               # st.write("Dados filtrados até a data selecionada:")
-              #  st.dataframe(df_copy02[df_copy02['Período'] <= data_desejada])  # Mostra o DataFrame filtrado
                 st.write(f'Total Economizado do começo dos dados ao mês selecionado: R$ {economia_total:.2f}')
                 st.write(f'Total de Carbono não emitido do começo dos dados ao mês selecionado: {carbono_economia:.2f} kg')
 
@@ -176,14 +168,17 @@ if not df.empty and 'Período' in df.columns and 'Modalidade' in df.columns:
                 # Processar o DataFrame preprocessed_df
                 preprocessed_df = df_filtered2.copy()
                 preprocessed_df = preprocessed_df.query("Modalidade != 'Auto Consumo-Geradora'")
-
+             
+                # Arredondar os valores para uma casa decimal
+                preprocessed_df = preprocessed_df.round(2)
+               
                 # Verificar se alguma coluna foi selecionada
                 if not selected_columns:
                     preprocessed_df_filtered = pd.DataFrame(columns=default_columns)
                 else:
                     # Filtrar o DataFrame com as colunas selecionadas para exibição
                     preprocessed_df_filtered = preprocessed_df[selected_columns].copy()
-
+                
                 # Atualizar a chamada para a função que gera a imagem
                 img = generate_image(preprocessed_df_filtered, monthly_data, selected_columns, default_columns, st.session_state.calculo_tipo, RECEBIDO, VALOR_A_PAGAR, VALOR_KWH_CEMIG, DESCONTO, VALOR_KWH_FATURADO, economia_total, carbono_economia, cliente_text, mes_referencia, vencimento02)
 
