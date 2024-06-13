@@ -21,4 +21,3 @@ def process_data(df, data_desejada, numero_instalacao):
 
     return df_filtered, mes_periodo
 
-
