@@ -12,7 +12,7 @@ from image import generate_image, format_currency
 from utils import ordenar_periodo
 
 # Configura o título da aplicação Streamlit.
-st.title("Processamento de Dados de Energia")
+st.title("Mateus PDF")
 
 # Carrega os dados através de uma função personalizada.
 df = load_data()
